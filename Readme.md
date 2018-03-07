@@ -1,3 +1,5 @@
+##zoffset
+
 The purpose of this program is to read CAM machine instructions,
 and modify the Z Values of of every tool move by transposing
 linearly to account for a changed Z zero location.
