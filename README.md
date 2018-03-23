@@ -1,6 +1,6 @@
 # zoffset
 
-The purpose of this program is to read CAM machine instructions,
+The purpose of this program is to read NC code,
 and modify the Z Values of of every tool move by transposing
 linearly to account for a changed Z zero location.
 
@@ -10,17 +10,19 @@ of the part from the left side to the right side of that part.
 
 ## Requirements
 Node.js
+readline-sync
 
 ## Exceptions
 
-This program does not change Z positions >= 20, as these are not
-machining commands, but clearance commands. 
+This program does not change Z positions of 20 or 30, as these are not considered
+machining commands, but homing commands. 
 
-This program ignores anything within () Parentheses.
+This program ignores anything within () parentheses.
 
-This program specifically ignores VPVLZ and VPVNZ commands
+This program specifically ignores VPVLZ and VPVNZ
 
-## Exceptions still to be added
+This program does not read the first line of the input file
 
-The program will not change Z positions with T0555 specificication
-on the preceding line.
+When the program sees a T0555 tool change, it will skip the next line that has non CRLF characters (Blank lines won't be counted)
+
+This program will still function correctly if it sees Z value numbers followed by (), or [a-zA-Z] characters without a space in between
