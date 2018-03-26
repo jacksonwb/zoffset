@@ -2,6 +2,7 @@
 var fs = require('fs');
 var path = require('path');
 var readlineSync = require('readline-sync');
+var math = require('mathjs');
 
 //This function handles pesky input quotations and properly delineated backslashes
 function pathCorrect (filepath) {
@@ -85,9 +86,9 @@ function zOffset (match, numberPart) {
 		if (zValue === 20 || zValue === 30) {
 			return match;
 		}
-		//Add zValue Offset - Multiply and divide by 10000 to eliminate floating point errors
-		let zOffsetValue = partLength;
-		zValue = (zValue*10000 - zOffsetValue*10000)/10000;
+		//Add zValue Offset - use math.format to eliminate floating point errors, then convert back to number
+		zValue = zValue - partLength;
+		zValue = Number(math.format(zValue, {precision: 14}));
 		//console.log(zValue);
 
 		//If the number is an integer, ensure a decimal is included in the string conversion

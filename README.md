@@ -11,6 +11,7 @@ of the part from the left side to the right side of that part.
 ## Requirements
 Node.js
 readline-sync
+mathjs
 
 ## Exceptions
 
