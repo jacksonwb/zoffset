@@ -1,4 +1,4 @@
-//This program runs the fs module and inquirer
+//This program runs the fs module, readline-sync, and mathjs
 var fs = require('fs');
 var path = require('path');
 var readlineSync = require('readline-sync');
@@ -64,6 +64,16 @@ let workingArray = data.split("\r");
 let newArray = workingArray;
 //console.log(workingArray);
 
+//Floating Point Math Error Handling Boilerplate
+function countDecimals(num) {
+    if(Math.floor(num) === num) return 0;
+    return num.toString().split(".")[1].length || 0; 
+}
+
+let errorCount = 0;
+let floatErrors = [];
+let i;
+
 //Processing Logic 
 //Set Match String to find Parentheses expressions and Z Values
 //Parentheses expressions are returned by the replacer unaltered, 
@@ -88,8 +98,13 @@ function zOffset (match, numberPart) {
 		}
 		//Add zValue Offset - use math.format to eliminate floating point errors, then convert back to number
 		zValue = zValue - partLength;
-		zValue = Number(math.format(zValue, {precision: 14}));
-		//console.log(zValue);
+		zValue = Number(math.format(zValue, {precision: 8}));
+		
+		//Check for long decimal floating point errors
+		if (countDecimals(zValue) > 4) {
+			errorCount += 1;
+			floatErrors.push((i+1));
+		}
 
 		//If the number is an integer, ensure a decimal is included in the string conversion
 		if (Number.isInteger(zValue)) {
@@ -107,7 +122,8 @@ const skipString = /T0555/g;
 let skipFlag = false;
 
 //Moves through entire document array, skipping the first line
-for (let i = 1; i <= workingArray.length - 1 ; i++) {
+//Note - iterator i is declared above to enable float math error handler to function correctly
+for (i = 1; i <= workingArray.length - 1 ; i++) {
 	console.log('Working array is: ' + workingArray[i]);
 	if (skipString.test(workingArray[i])) {					//test for T0555. If present set skip flag. Advance line.
 		skipFlag = true;
@@ -130,7 +146,15 @@ let newData = workingArray.join("\r");
 //console.log(newData);
 
 //outpute newData to a text file
+//Throw errors and float error messages
 fs.writeFile(writepath, newData, 'utf-8', (err) => {
 	if (err) throw err;
 	console.log('File has been saved!');
+	if (errorCount > 0) {
+		console.log('');
+		console.log('Warning! - Errors detected on lines: ' + floatErrors.join(', '));
+		readlineSync.question('Press enter to exit');
+		return;
+	}
 });
+
